@@ -177,7 +177,8 @@ class Network:
                 "\n\nOur time service requires a login/password to rate-limit. Please register for a free adafruit.io account and place the user/key in your secrets file under 'aio_username' and 'aio_key'"  # pylint: disable=line-too-long
             ) from KeyError
 
-        location = secrets.get("timezone", location)
+        if location is None:
+            location = secrets.get("timezone")
         if location:
             print("Getting time for timezone", location)
             api_url = (TIME_SERVICE + "&tz=%s") % (aio_username, aio_key, location)
@@ -322,7 +323,7 @@ class Network:
                 "Adafruit IO secrets are kept in secrets.py, please add them there!\n\n"
             ) from KeyError
 
-        return IO_HTTP(aio_username, aio_key, self._wifi.manager(secrets))
+        return IO_HTTP(aio_username, aio_key, requests)
 
     def push_to_io(self, feed_key, data):
         """Push data to an adafruit.io feed
